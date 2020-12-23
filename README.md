@@ -15,7 +15,7 @@ In this project, we will be using real-world data from the Waymo Open Dataset, d
 
 ### Range image visualization
 
-The output range image is a two dimensional array. Its row is pitch, and its column is yaw, and it has two channels, range and intensity. The invovled steps are,  
+The output range image is a two dimensional array. Its row is pitch, and its column is yaw, and it has two channels, range and intensity. The involved steps are,  
 
 * extract raw lidar image data from dataset frame  
 * extract intensity channel, remove outlier, and scale it to 8 bit image  
@@ -69,7 +69,7 @@ The intesity layer looks like below,
   
 
 ### Height layer
-Height layer is normalized by detecton bounding box range limit in z direction.
+Height layer is normalized by detection bounding box range limit in z direction.
 
 The height layer looks like below,  
 
@@ -153,5 +153,5 @@ Just to validate that evaluation codes are properly implemented, below is the ev
 
 ## Relfection
 
-Converting lidar point to BEV image and perform object detection is certainly an interesing and promising direction. On the other side, lidar sensor is , by its nature, lacked of semantic information. Maybe one altenative is to use both lidar and camera image as neural network input ,and perfrom object detection.
+Converting lidar point to BEV image and perform object detection is certainly an interesing and promising direction. On the other side, lidar sensor is , by its nature, lacked of semantic information. Maybe one altenative is to use both lidar and camera image as neural network input ,and perform object detection.
 
