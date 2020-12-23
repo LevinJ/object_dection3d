@@ -28,25 +28,54 @@ from tools.waymo_reader.simple_waymo_open_dataset_reader import dataset_pb2, lab
 
 # object detection tools and helper functions
 import misc.objdet_tools as tools
+import open3d as o3d
+import time
 
-
+g_bContinue = True
 # visualize lidar point-cloud
-def show_pcl(pcl):
+def show_pcl(pcl, configs=None):
 
     ####### ID_S1_EX2 START #######     
     #######
     print("student task ID_S1_EX2")
 
     # step 1 : initialize open3d with key callback and create window
-    
+    vis = o3d.visualization.VisualizerWithKeyCallback()
+   
+    key_to_callback = {}
+    global g_bContinue
+    g_bContinue = True
+    def cb(vis):
+        global g_bContinue
+        print("key pressed")
+        g_bContinue = False
+        return
+        
+    vis.register_key_callback(262, cb)
     # step 2 : create instance of open3d point-cloud class
-
+    pcd = o3d.geometry.PointCloud()
+    
     # step 3 : set points in pcd instance by converting the point-cloud into 3d vectors (using open3d function Vector3dVector)
-
+    if configs is not None:
+        lidar_pcl = pcl
+        mask = np.where((lidar_pcl[:, 0] >= configs.lim_x[0]) & (lidar_pcl[:, 0] <= configs.lim_x[1]) &
+                        (lidar_pcl[:, 1] >= configs.lim_y[0]) & (lidar_pcl[:, 1] <= configs.lim_y[1]) &
+                        (lidar_pcl[:, 2] >= configs.lim_z[0]) & (lidar_pcl[:, 2] <= configs.lim_z[1]))
+        pcl = lidar_pcl[mask]
+        xs, ys, zs = pcl[:,0].reshape(-1, 1), pcl[:,1].reshape(-1, 1), pcl[:,2].reshape(-1, 1)
+        pcl = np.hstack([-ys, xs, zs])
+    
+    pcd.points = o3d.utility.Vector3dVector(pcl[:,:3])
     # step 4 : for the first frame, add the pcd instance to visualization using add_geometry; for all other frames, use update_geometry instead
+    vis.create_window()
+    vis.add_geometry(pcd)
     
     # step 5 : visualize point cloud and keep window open until right-arrow is pressed (key-code 262)
-
+    
+    vis.update_renderer()
+    while g_bContinue:
+        vis.poll_events()
+        time.sleep(0.5)
     #######
     ####### ID_S1_EX2 END #######     
        
@@ -124,7 +153,7 @@ def bev_from_pcl(lidar_pcl, configs):
     discr_xs = discr_xs.round().astype(np.int)
     lidar_pcl_cpy[:, 0] = discr_xs
     # step 4 : visualize point-cloud using the function show_pcl from a previous task
-    show_pcl(lidar_pcl_cpy)
+#     show_pcl(lidar_pcl_cpy)
     
     temp_map = np.zeros((configs.bev_height, configs.bev_width))
     temp_map[discr_ys, discr_xs] = 255
